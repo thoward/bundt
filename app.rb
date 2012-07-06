@@ -2,6 +2,7 @@ require 'sinatra'
 require 'haml'
 require 'sinatra/namespace'
 require 'sinatra/json'
+require_relative 'user_service/github'
 
 enable :sessions
 set :protection, except: :ip_spoofing
@@ -21,96 +22,109 @@ end
 
 ## API Endpoints
 
-namespace '/api/:token' do
+namespace '/api/:service/:token' do
+
+  services = {
+    'github' => UserService::Github.new
+  }
+  
+  def json_or_404(result)
+    if result == nil
+      status 404
+    else
+      json result
+    end 
+  end
 
   namespace '/group/:id' do
 
     # Group CRUD
-    get '' do |token, id|
-      json :token => token, :id => id
+    get '' do |service, token, id|
+      json_or_404 services[service].groups(token).find {|group| group[:id] == id }
     end
-    put '' do |token, id|
+
+    put '' do |service, token, id|
     end
-    delete '' do |token, id|
+    delete '' do |service, token, id|
     end
 
     # Group's users
-    get '/users' do |token, id|
+    get '/users' do |service, token, id|
     end
 
     # Group's templates
-    get '/templates' do |token, id|
+    get '/templates' do |service, token, id|
     end
   end
 
   namespace '/user/:id' do
 
     # User CRUD
-    get '' do |token, id|
+    get '' do |service, token, id|
     end
-    put '' do |token, id|
+    put '' do |service, token, id|
     end
-    delete '' do |token, id|
+    delete '' do |service, token, id|
     end
 
     # User's teams
-    get '/teams' do |token, id|
+    get '/teams' do |service, token, id|
     end
 
     # User's reports
-    get '/reports' do |token, id|
+    get '/reports' do |service, token, id|
     end
 
     # User's reports, by group
-    get '/reports/:group' do |token, id, group|
+    get '/reports/:group' do |service, token, id, group|
     end
   end
 
   namespace '/template/:id' do
     # Template CRUD
-    get '' do |token, id|
+    get '' do |service, token, id|
     end
-    put '' do |token, id|
+    put '' do |service, token, id|
     end
-    delete '' do |token, id|
+    delete '' do |service, token, id|
     end  
 
     # Templates's reports
-    get '/reports' do |token, id|
+    get '/reports' do |service, token, id|
     end   
   end
 
   namespace '/report/:id' do
 
     # Report CRUD
-    get '' do |token, id|
+    get '' do |service, token, id|
     end
-    put '' do |token, id|
+    put '' do |service, token, id|
     end
-    delete '' do |token, id|
+    delete '' do |service, token, id|
     end
 
     # Report's user
-    get '/user' do |token, id|
+    get '/user' do |service, token, id|
     end
 
     # Report's group
-    get '/group' do |token, id|
+    get '/group' do |service, token, id|
     end   
 
     # Report's group
-    get '/comments' do |token, id|
+    get '/comments' do |service, token, id|
     end   
   end
 
   namespace '/comment/:id' do
 
     # Comment CRUD
-    get '' do |token, id|
+    get '' do |service, token, id|
     end
-    put '' do |token, id|
+    put '' do |service, token, id|
     end
-    delete '' do |token, id|
+    delete '' do |service, token, id|
     end
   end
 end
