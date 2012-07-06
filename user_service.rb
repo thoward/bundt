@@ -1,4 +1,4 @@
-module user_service
+module UserService
   
   def self.user(id, display, email)
     # user hash:
